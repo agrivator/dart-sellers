@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'HomeScreen.dart';
 
 void main() => runApp(MyApp());
 
@@ -7,7 +8,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Dart Sellers',
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      theme: ThemeData(
+        primaryColor: Color(0xFFA4CF70),
+        accentColor: Color(0xFF2f2e41),
+      ),
+      home: HomeScreen(),
     );
   }
 }
