@@ -30,23 +30,17 @@ class _HomeTabState extends State<HomeTab> {
           children: <Widget>[
             Padding(
                 padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-                child: Material(
-                    child: InkWell(
-                  onTap: _launchURL,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20)),
                   child: Container(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          bottomRight: Radius.circular(20)),
-                      child: Image.asset(
-                        'images/agrivator1.png',
-                        height: size.height * 0.1731228355,
-                        fit: BoxFit.fill,
-                        width: size.width * 0.898842592,
-                      ),
-                    ),
-                  ),
-                ))), //banner
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            colors: [Colors.green, Colors.blue]),),
+                      height: size.height*0.153,
+                      width: size.width),
+                ),), //banner
             Padding(
               padding: const EdgeInsets.only(top: 20),
               child: Padding(
