@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import '../error.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import '../HomePageTabs/NestedTabBar.dart';
 import 'package:url_launcher/url_launcher.dart';
 class HomeTab extends StatefulWidget {
   @override
@@ -40,11 +40,43 @@ class _HomeTabState extends State<HomeTab> {
                             colors: [Color(0xffEDF5E0), Color(0xffA4CF70)],
                         begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                        ),),
+                        ),
+                    ),
                       height: size.height*0.18,
                       width: size.width,
-                    child: Row(
-
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: size.width*0.035),
+                      child: Row(
+                        children: <Widget>[
+                          ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            child: Image.asset(
+                              "images/storec.jpg",
+                              height: size.height*0.12,
+                            ),
+                          ),
+                          Spacer(),
+                          RichText(
+                            text: TextSpan(
+                              text: "Store A\n",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: "X Street, Y, India\n\nOwner: Mr. A",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.black
+                                  ),
+                                ),
+                              ]
+                            ),
+                            textAlign: TextAlign.end,
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),), //banner
@@ -55,12 +87,16 @@ class _HomeTabState extends State<HomeTab> {
                   left: 20,
                 ),
                 child: Text(
-                  "Recent Items",
+                  "Items",
                   style:
                       TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
               ),
-            ), //Recent Items
+            ), //Items
+            Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: NestedTabBar(),
+            ), //Tabs
             Padding(
               padding: const EdgeInsets.only(
                 left: 5,
