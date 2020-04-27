@@ -37,9 +37,16 @@ class _HomeTabState extends State<HomeTab> {
                   child: Container(
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
-                            colors: [Colors.green, Colors.blue]),),
-                      height: size.height*0.153,
-                      width: size.width),
+                            colors: [Color(0xffEDF5E0), Color(0xffA4CF70)],
+                        begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),),
+                      height: size.height*0.18,
+                      width: size.width,
+                    child: Row(
+
+                    ),
+                  ),
                 ),), //banner
             Padding(
               padding: const EdgeInsets.only(top: 20),
