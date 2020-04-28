@@ -79,23 +79,23 @@ class _HomeScreenState extends State<HomeScreen> {
             BottomNavigationBarItem(
               icon: Icon(
                 Icons.home,
-                color: Theme.of(context).primaryColor,
+                color: Colors.white,
               ),
-              title: Text('Home'),
+              title: Text('HOME'),
             ),
             BottomNavigationBarItem(
               icon: Icon(
-                Agri.search,
-                color: Theme.of(context).primaryColor,
+                Agri.shopping_list,
+                color: Colors.white,
               ),
-              title: Text('Orders'),
+              title: Text('ORDERS'),
             ),
             BottomNavigationBarItem(
               icon: Icon(
-                Agri.shopping_cart,
-                color: Theme.of(context).primaryColor,
+                Icons.person,
+                color: Colors.white,
               ),
-              title: Text('Profile'),
+              title: Text('PROFILE'),
             ),
           ],
         )
