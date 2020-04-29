@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'fonts/agri_icons.dart';
 import 'Tabs/Hometab.dart';
-import 'Tabs/SearchTab.dart';
+import 'Tabs/OrderTab.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -16,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   final _page = <Widget>[
     HomeTab(),
-    SearchTab(),
+    OrderTab(),
     Text(
       'Index 3: User Profile',
       style: optionStyle,
