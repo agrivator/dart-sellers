@@ -5,7 +5,7 @@ import 'package:pin_code_text_field/pin_code_text_field.dart';
 import 'ProfileFormScreen.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
-  String phoneNo;
+  final String phoneNo;
 
   OtpVerificationScreen({Key key, @required this.phoneNo}) :super(key: key);
 

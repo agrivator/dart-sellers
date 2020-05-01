@@ -25,7 +25,7 @@ class _ProfileFormState extends State<ProfileFormScreen> {
                   padding: EdgeInsets.only(top: 20.0),
                   child: GestureDetector(
                     child: CircleAvatar(
-                      backgroundImage: AssetImage("images/user.jpg"),
+                      backgroundImage: AssetImage("images/storea.jpg"),
                       radius: 80.0,
                       child: Align(
                         alignment: Alignment.bottomRight,
@@ -51,13 +51,13 @@ class _ProfileFormState extends State<ProfileFormScreen> {
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(
                               horizontal: 32.0, vertical: 14.0),
-                          hintText: "Name",
+                          hintText: "Store Name",
                           hintStyle: TextStyle(fontSize: 13),
-                          prefixIcon: Icon(Icons.person),
+                          prefixIcon: Icon(Icons.store),
                         ),
                         validator: (value) {
                           if (value.isEmpty) {
-                            return '*Name required';
+                            return '*Store Name required';
                           }
                         },
                         //onSaved to be implemented
@@ -66,17 +66,16 @@ class _ProfileFormState extends State<ProfileFormScreen> {
                         height: 20,
                       ),
                       TextFormField(
-                        keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(
                               horizontal: 32.0, vertical: 14.0),
-                          hintText: "Email",
+                          hintText: "Owner Name",
                           hintStyle: TextStyle(fontSize: 13),
-                          prefixIcon: Icon(Icons.email),
+                          prefixIcon: Icon(Icons.person),
                         ),
                         validator: (value) {
                           if (value.isEmpty) {
-                            return '*Email required';
+                            return '*Store Name required';
                           }
                         },
                         //onSaved to be implemented
