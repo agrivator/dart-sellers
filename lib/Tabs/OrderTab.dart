@@ -1,16 +1,73 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'dart:async';
 class OrderTab extends StatefulWidget {
   @override
   _OrderTabState createState()=> _OrderTabState();
 }
-class _OrderTabState extends State<OrderTab>{
+class _OrderTabState extends State<OrderTab> {
   var x=[1,1,1,1,1];
   var value1=[[true,true,true],[true,true,true],[true,true,true],[true,true,true],[true,true,true]];
-  @override
+  Timer _timer1,_timer2,_timer3,_timer4,_timer5,_timer;
+  var _start = [3600,3600,3600,3600,3600];
+  String _printDuration(Duration duration) {
+    String twoDigits(int n) {
+      if (n >= 10) return "$n";
+      return "0$n";
+    }
 
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+  }
+  Timer timeGenerator(int i){
+    const oneSec = const Duration(seconds: 1);
+    return Timer.periodic(
+      oneSec,
+          (Timer timer) => setState(
+            () {
+          if (_start[i]<= 0) {
+            timer.cancel();
+          } else {
+            _start[i] = _start[i] - 1;
+          }
+        },
+      ),
+    );
+  }
+  void startTimer(int i) {
+    switch(i) {
+      case 0:
+        _timer1 = timeGenerator(0);
+        break;
+      case 1:
+        _timer2 = timeGenerator(1);
+        break;
+      case 2:
+        _timer3 = timeGenerator(2);
+        break;
+      case 3:
+        _timer4 = timeGenerator(3);
+        break;
+      case 4:
+        _timer5 = timeGenerator(4);
+        break;
+    }
+  }
+  @override
+  void dispose() {
+    _timer1.cancel();
+    _timer2.cancel();
+    _timer3.cancel();
+    _timer4.cancel();
+    _timer5.cancel();
+    super.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
@@ -49,14 +106,19 @@ class _OrderTabState extends State<OrderTab>{
                               Row(
                                 children: <Widget>[
                                   Text('Order:'),
-                                  ButtonTheme(
-                                    minWidth: 10,
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 5,right: 5),
+                                  child: ButtonTheme(
+                                    minWidth: 8,
                                   height: 5,
                                   child: RaisedButton(
                                     elevation: 5.0,
-                                    onPressed: ()=>setState(()=>x[0]++),
+                                    onPressed: x[0]==1?(){
+                                      startTimer(0);
+                                    setState(()=>x[0]++);
+                                    }:x[0]==2?()
+                                    {_timer1.cancel();setState(()=>x[0]++);}:()=>setState(()=>x[0]++),
                                     padding: EdgeInsets.all(15.0),
-
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30.0),
                                     ),
@@ -68,12 +130,12 @@ class _OrderTabState extends State<OrderTab>{
                                         fontFamily: 'OpenSans',
                                       ),
                                     ),
-
+                                  ),
                                   ),
                                   ),
                                   x[0]==1?
                                       ButtonTheme(
-                                        minWidth: 10,
+                                        minWidth: 8,
                                   height: 5,
                                   child: RaisedButton(
                                     elevation: 5.0,
@@ -95,22 +157,54 @@ class _OrderTabState extends State<OrderTab>{
                                       ): new Container(),
                                 ],
                               ): new Container(),
+                              SizedBox(
+                                height: 10.0,
+                              ),
                               Row(
                                 children: <Widget>[
                                   Text('Status: '),
-                                  Text(x[0]==1?'Not accepted yet!':x[0]==2?'Accepted':x[0]==3?'Packed':'Completed'),
+                                  Text(x[0]==1?'Not accepted yet!'
+                                      :x[0]==2&&_start[0]!=0?'Accepted':_start[0]==0&&x[0]==2?'Packing delayed':
+                                  x[0]==3?'Packed':'Completed',style:
+                                  TextStyle(color: _start[0]==0&&x[0]==2?Colors.red:x[0]==4?Colors.green:Colors.black ,
+                                     ),)
                                 ],
                               ),
                               SizedBox(
                                 height: 10.0,
                               ),
+                              x[0]==2&&_start[0]>0?
+                              Row(
+                                children: <Widget>[
+                                  Text('Time to Pack:'),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 10),
+                                  child: CircularPercentIndicator(
+                                    radius: 90.0,
+                                    lineWidth: 8.0,
+                                    animation: false,
+                                    percent: _start[0]/3600,
+                                    center: new Text(
+                                        _printDuration(Duration(seconds: _start[0])),
+                                      style:
+                                      new TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0,color: Colors.green),
+                                    ),
+                                    circularStrokeCap: CircularStrokeCap.round,
+                                    progressColor: Colors.green,
+                                    backgroundColor: Colors.white,
+                                  ),
+                                  ),
+                                ],
+                              ):new Container(),
+                              SizedBox(
+                                height: 10.0,
+                              ),
                               LinearPercentIndicator(
-                                width: 100.0,
+                                width: 180.0,
                                 animation: true,
                                 animationDuration: 1000,
-                                lineHeight: 20.0,
+                                lineHeight: 8.0,
                                 percent: x[0]==1?0.0:x[0]==2?0.35:x[0]==3?0.70:1.0,
-                                center: Text(x[0]==1?'0%':x[0]==2?'35%':x[0]==3?'70%':'100%',),
                                 linearStrokeCap: LinearStrokeCap.butt,
                                 progressColor: Colors.green,
                               ),
@@ -265,67 +359,105 @@ class _OrderTabState extends State<OrderTab>{
                         Row(
                           children: <Widget>[
                             Text('Order:'),
-                            ButtonTheme(
-                              minWidth: 10,
-                            height: 5,
-                            child: RaisedButton(
-                              elevation: 5.0,
-                              onPressed: ()=>setState(()=>x[1]++),
-                              padding: EdgeInsets.all(15.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                              color: Colors.green,
-                              child: Text(
-                                x[1]==1?'Accept':x[1]==2?'Pack':'Dispatch',
-                                style: TextStyle(
-                                  color: Color(0xFFFFFFFF),
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'OpenSans',
+                            Padding(
+                              padding: const EdgeInsets.only(left: 5,right: 5),
+                              child: ButtonTheme(
+                              minWidth: 8,
+                              height: 5,
+                              child: RaisedButton(
+                                elevation: 5.0,
+                                onPressed: x[1]==1?(){
+                                  startTimer(1);
+                                  setState(()=>x[1]++);
+                                }:x[1]==2?()
+                                {_timer2.cancel();setState(()=>x[1]++);}:()=>setState(()=>x[1]++),
+                                padding: EdgeInsets.all(15.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                color: Colors.green,
+                                child: Text(
+                                  x[1]==1?'Accept':x[1]==2?'Pack':'Dispatch',
+                                  style: TextStyle(
+                                    color: Color(0xFFFFFFFF),
+                                    fontFamily: 'OpenSans',
+                                  ),
                                 ),
                               ),
                             ),
                             ),
                             x[1]==1?
-                                ButtonTheme(
-                                  minWidth: 10,
-                            height: 5,
-                            child: RaisedButton(
-                              elevation: 5.0,
-                              onPressed: ()=>setState(()=>x[1]=0),
-                              padding: EdgeInsets.all(15.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                              color: Colors.red,
-                              child: Text(
-                                'Reject',
-                                style: TextStyle(
-                                  color: Color(0xFFFFFFFF),
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'OpenSans',
+                            ButtonTheme(
+                              minWidth: 8,
+                              height: 5,
+                              child: RaisedButton(
+                                elevation: 5.0,
+                                onPressed: ()=>setState(()=>x[1]=0),
+                                padding: EdgeInsets.all(15.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                color: Colors.red,
+                                child: Text(
+                                  'Reject',
+                                  style: TextStyle(
+                                    color: Color(0xFFFFFFFF),
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'OpenSans',
+                                  ),
                                 ),
                               ),
-                            )
-                                ): new Container(),
+                            ): new Container(),
                           ],
                         ): new Container(),
+                        SizedBox(
+                          height: 10.0,
+                        ),
                         Row(
                           children: <Widget>[
                             Text('Status: '),
-                            Text(x[1]==1?'Not accepted yet!':x[1]==2?'Accepted':x[1]==3?'Packed':'Completed'),
+                            Text(x[1]==1?'Not accepted yet!'
+                                :x[1]==2&&_start[1]!=0?'Accepted':_start[1]==0&&x[1]==2?'Packing delayed':
+                            x[1]==3?'Packed':'Completed',style:
+                            TextStyle(color: _start[1]==0&&x[1]==2?Colors.red:x[1]==4?Colors.green:Colors.black ,
+                            ),)
                           ],
                         ),
                         SizedBox(
                           height: 10.0,
                         ),
+                        x[1]==2&&_start[1]>0?
+                        Row(
+                          children: <Widget>[
+                            Text('Time to Pack:'),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: CircularPercentIndicator(
+                                radius: 90.0,
+                                lineWidth: 8.0,
+                                animation: false,
+                                percent: _start[1]/3600,
+                                center: new Text(
+                                  _printDuration(Duration(seconds: _start[1])),
+                                  style:
+                                  new TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0,color: Colors.green),
+                                ),
+                                circularStrokeCap: CircularStrokeCap.round,
+                                progressColor: Colors.green,
+                                backgroundColor: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ):new Container(),
+                        SizedBox(
+                          height: 10.0,
+                        ),
                         LinearPercentIndicator(
-                          width: 100.0,
+                          width: 180.0,
                           animation: true,
                           animationDuration: 1000,
-                          lineHeight: 20.0,
+                          lineHeight: 8.0,
                           percent: x[1]==1?0.0:x[1]==2?0.35:x[1]==3?0.70:1.0,
-                          center: Text(x[1]==1?'0%':x[1]==2?'35%':x[1]==3?'70%':'100%',),
                           linearStrokeCap: LinearStrokeCap.butt,
                           progressColor: Colors.green,
                         ),
@@ -480,67 +612,105 @@ class _OrderTabState extends State<OrderTab>{
                         Row(
                           children: <Widget>[
                             Text('Order:'),
-                            ButtonTheme(
-                              minWidth: 10,
-                            height: 5,
-                            child: RaisedButton(
-                              elevation: 5.0,
-                              onPressed: ()=>setState(()=>x[2]++),
-                              padding: EdgeInsets.all(15.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                              color: Colors.green,
-                              child: Text(
-                                x[2]==1?'Accept':x[2]==2?'Pack':'Dispatch',
-                                style: TextStyle(
-                                  color: Color(0xFFFFFFFF),
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'OpenSans',
+                            Padding(
+                              padding: const EdgeInsets.only(left: 5,right: 5),
+                            child: ButtonTheme(
+                              minWidth: 8,
+                              height: 5,
+                              child: RaisedButton(
+                                elevation: 5.0,
+                                onPressed: x[2]==1?(){
+                                  startTimer(2);
+                                  setState(()=>x[2]++);
+                                }:x[2]==2?()
+                                {_timer3.cancel();setState(()=>x[2]++);}:()=>setState(()=>x[2]++),
+                                padding: EdgeInsets.all(15.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                color: Colors.green,
+                                child: Text(
+                                  x[2]==1?'Accept':x[2]==2?'Pack':'Dispatch',
+                                  style: TextStyle(
+                                    color: Color(0xFFFFFFFF),
+                                    fontFamily: 'OpenSans',
+                                  ),
                                 ),
                               ),
                             ),
                             ),
                             x[2]==1?
-                                ButtonTheme(
-                                  minWidth: 10,
-                            height: 5,
-                            child: RaisedButton(
-                              elevation: 5.0,
-                              onPressed: ()=>setState(()=>x[2]=0),
-                              padding: EdgeInsets.all(15.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                              color: Colors.red,
-                              child: Text(
-                                'Reject',
-                                style: TextStyle(
-                                  color: Color(0xFFFFFFFF),
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'OpenSans',
+                            ButtonTheme(
+                              minWidth: 8,
+                              height: 5,
+                              child: RaisedButton(
+                                elevation: 5.0,
+                                onPressed: ()=>setState(()=>x[2]=0),
+                                padding: EdgeInsets.all(15.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                color: Colors.red,
+                                child: Text(
+                                  'Reject',
+                                  style: TextStyle(
+                                    color: Color(0xFFFFFFFF),
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'OpenSans',
+                                  ),
                                 ),
                               ),
-                            )
-                                ): new Container(),
+                            ): new Container(),
                           ],
                         ): new Container(),
+                        SizedBox(
+                          height: 10.0,
+                        ),
                         Row(
                           children: <Widget>[
                             Text('Status: '),
-                            Text(x[2]==1?'Not accepted yet!':x[2]==2?'Accepted':x[2]==3?'Packed':'Completed'),
+                            Text(x[2]==1?'Not accepted yet!'
+                                :x[2]==2&&_start[2]!=0?'Accepted':_start[2]==0&&x[2]==2?'Packing delayed':
+                            x[2]==3?'Packed':'Completed',style:
+                            TextStyle(color: _start[2]==0&&x[2]==2?Colors.red:x[2]==4?Colors.green:Colors.black ,
+                            ),)
                           ],
                         ),
                         SizedBox(
                           height: 10.0,
                         ),
+                        x[2]==2&&_start[2]>0?
+                        Row(
+                          children: <Widget>[
+                            Text('Time to Pack:'),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: CircularPercentIndicator(
+                                radius: 90.0,
+                                lineWidth: 8.0,
+                                animation: false,
+                                percent: _start[2]/3600,
+                                center: new Text(
+                                  _printDuration(Duration(seconds: _start[2])),
+                                  style:
+                                  new TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0,color: Colors.green),
+                                ),
+                                circularStrokeCap: CircularStrokeCap.round,
+                                progressColor: Colors.green,
+                                backgroundColor: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ):new Container(),
+                        SizedBox(
+                          height: 10.0,
+                        ),
                         LinearPercentIndicator(
-                          width: 100.0,
+                          width: 180.0,
                           animation: true,
                           animationDuration: 1000,
-                          lineHeight: 20.0,
+                          lineHeight: 8.0,
                           percent: x[2]==1?0.0:x[2]==2?0.35:x[2]==3?0.70:1.0,
-                          center: Text(x[2]==1?'0%':x[2]==2?'35%':x[2]==3?'70%':'100%',),
                           linearStrokeCap: LinearStrokeCap.butt,
                           progressColor: Colors.green,
                         ),
@@ -683,7 +853,7 @@ class _OrderTabState extends State<OrderTab>{
                         SizedBox(
                           height: 10.0,
                         ),
-                        Text("27 April 2020 07:30 pm"),
+                        Text("27 April 2020 07:20 pm"),
                         SizedBox(
                           height: 10.0,
                         ),
@@ -695,67 +865,106 @@ class _OrderTabState extends State<OrderTab>{
                         Row(
                           children: <Widget>[
                             Text('Order:'),
-                            ButtonTheme(
-                              minWidth: 10,
-                            height: 5,
-                            child: RaisedButton(
-                              elevation: 5.0,
-                              onPressed: ()=>setState(()=>x[3]++),
-                              padding: EdgeInsets.all(15.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                              color: Colors.green,
-                              child: Text(
-                                x[0]==1?'Accept':x[0]==2?'Pack':'Dispatch',
-                                style: TextStyle(
-                                  color: Color(0xFFFFFFFF),
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'OpenSans',
+                            Padding(
+                              padding: const EdgeInsets.only(left: 5,right: 5),
+                            child: ButtonTheme(
+                              minWidth: 8,
+                              height: 5,
+                              child: RaisedButton(
+                                elevation: 5.0,
+                                onPressed: x[3]==1?(){
+                                  startTimer(3);
+                                  setState(()=>x[3]++);
+                                }:x[3]==2?()
+                                {_timer4.cancel();setState(()=>x[3]++);}:()=>setState(()=>x[3]++),
+                                padding: EdgeInsets.all(15.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
                                 ),
+                                color: Colors.green,
+                                child: Text(
+                                  x[3]==1?'Accept':x[3]==2?'Pack':'Dispatch',
+                                  style: TextStyle(
+                                    color: Color(0xFFFFFFFF),
+                                    fontFamily: 'OpenSans',
+                                  ),
+                                ),
+
                               ),
                             ),
                             ),
                             x[3]==1?
-                                ButtonTheme(
-                                  minWidth: 10,
-                            height: 5,
-                            child: RaisedButton(
-                              elevation: 5.0,
-                              onPressed: ()=>setState(()=>x[3]=0),
-                              padding: EdgeInsets.all(15.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                              color: Colors.red,
-                              child: Text(
-                                'Reject',
-                                style: TextStyle(
-                                  color: Color(0xFFFFFFFF),
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'OpenSans',
+                            ButtonTheme(
+                              minWidth: 8,
+                              height: 5,
+                              child: RaisedButton(
+                                elevation: 5.0,
+                                onPressed: ()=>setState(()=>x[3]=0),
+                                padding: EdgeInsets.all(15.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                color: Colors.red,
+                                child: Text(
+                                  'Reject',
+                                  style: TextStyle(
+                                    color: Color(0xFFFFFFFF),
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'OpenSans',
+                                  ),
                                 ),
                               ),
-                            )
-                                ): new Container(),
+                            ): new Container(),
                           ],
                         ): new Container(),
+                        SizedBox(
+                          height: 10.0,
+                        ),
                         Row(
                           children: <Widget>[
                             Text('Status: '),
-                            Text(x[3]==1?'Not accepted yet!':x[3]==2?'Accepted':x[3]==3?'Packed':'Completed'),
+                            Text(x[3]==1?'Not accepted yet!'
+                                :x[3]==2&&_start[3]!=0?'Accepted':_start[3]==0&&x[3]==2?'Packing delayed':
+                            x[3]==3?'Packed':'Completed',style:
+                            TextStyle(color: _start[3]==0&&x[3]==2?Colors.red:x[3]==4?Colors.green:Colors.black ,
+                            ),)
                           ],
                         ),
                         SizedBox(
                           height: 10.0,
                         ),
+                        x[3]==2&&_start[3]>0?
+                        Row(
+                          children: <Widget>[
+                            Text('Time to Pack:'),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: CircularPercentIndicator(
+                                radius: 90.0,
+                                lineWidth: 8.0,
+                                animation: false,
+                                percent: _start[3]/3600,
+                                center: new Text(
+                                  _printDuration(Duration(seconds: _start[3])),
+                                  style:
+                                  new TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0,color: Colors.green),
+                                ),
+                                circularStrokeCap: CircularStrokeCap.round,
+                                progressColor: Colors.green,
+                                backgroundColor: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ):new Container(),
+                        SizedBox(
+                          height: 10.0,
+                        ),
                         LinearPercentIndicator(
-                          width: 100.0,
+                          width: 180.0,
                           animation: true,
                           animationDuration: 1000,
-                          lineHeight: 20.0,
+                          lineHeight: 8.0,
                           percent: x[3]==1?0.0:x[3]==2?0.35:x[3]==3?0.70:1.0,
-                          center: Text(x[3]==1?'0%':x[3]==2?'35%':x[3]==3?'70%':'100%',),
                           linearStrokeCap: LinearStrokeCap.butt,
                           progressColor: Colors.green,
                         ),
@@ -906,71 +1115,110 @@ class _OrderTabState extends State<OrderTab>{
                         SizedBox(
                           height: 10.0,
                         ),
-                        x[4]!=4?
+                        x[0]!=4?
                         Row(
                           children: <Widget>[
                             Text('Order:'),
-                            ButtonTheme(
-                              minWidth: 10,
-                            height: 5,
-                            child: RaisedButton(
-                              elevation: 5.0,
-                              onPressed: ()=>setState(()=>x[4]++),
-                              padding: EdgeInsets.all(15.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                              color: Colors.green,
-                              child: Text(
-                                x[4]==1?'Accept':x[4]==2?'Pack':'Dispatch',
-                                style: TextStyle(
-                                  color: Color(0xFFFFFFFF),
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'OpenSans',
+                            Padding(
+                              padding: const EdgeInsets.only(left: 5,right: 5),
+                            child: ButtonTheme(
+                              minWidth: 8,
+                              height: 5,
+                              child: RaisedButton(
+                                elevation: 5.0,
+                                onPressed: x[4]==1?(){
+                                  startTimer(4);
+                                  setState(()=>x[4]++);
+                                }:x[4]==2?()
+                                {_timer5.cancel();setState(()=>x[4]++);}:()=>setState(()=>x[4]++),
+                                padding: EdgeInsets.all(15.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
                                 ),
+                                color: Colors.green,
+                                child: Text(
+                                  x[4]==1?'Accept':x[4]==2?'Pack':'Dispatch',
+                                  style: TextStyle(
+                                    color: Color(0xFFFFFFFF),
+                                    fontFamily: 'OpenSans',
+                                  ),
+                                ),
+
                               ),
                             ),
                             ),
                             x[4]==1?
-                                ButtonTheme(
-                                  minWidth: 10,
-                            height: 5,
-                            child: RaisedButton(
-                              elevation: 5.0,
-                              onPressed: ()=>setState(()=>x[4]=0),
-                              padding: EdgeInsets.all(15.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                              color: Colors.red,
-                              child: Text(
-                                'Reject',
-                                style: TextStyle(
-                                  color: Color(0xFFFFFFFF),
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'OpenSans',
+                            ButtonTheme(
+                              minWidth: 8,
+                              height: 5,
+                              child: RaisedButton(
+                                elevation: 5.0,
+                                onPressed: ()=>setState(()=>x[4]=0),
+                                padding: EdgeInsets.all(15.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                color: Colors.red,
+                                child: Text(
+                                  'Reject',
+                                  style: TextStyle(
+                                    color: Color(0xFFFFFFFF),
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'OpenSans',
+                                  ),
                                 ),
                               ),
-                            )
-                                ): new Container(),
+                            ): new Container(),
                           ],
                         ): new Container(),
+                        SizedBox(
+                          height: 10.0,
+                        ),
                         Row(
                           children: <Widget>[
                             Text('Status: '),
-                            Text(x[4]==1?'Not accepted yet!':x[4]==2?'Accepted':x[4]==3?'Packed':'Completed'),
+                            Text(x[4]==1?'Not accepted yet!'
+                                :x[4]==2&&_start[4]!=0?'Accepted':_start[4]==0&&x[4]==2?'Packing delayed':
+                            x[4]==3?'Packed':'Completed',style:
+                            TextStyle(color: _start[4]==0&&x[4]==2?Colors.red:x[4]==4?Colors.green:Colors.black ,
+                            ),)
                           ],
                         ),
                         SizedBox(
                           height: 10.0,
                         ),
+                        x[4]==2&&_start[4]>0?
+                        Row(
+                          children: <Widget>[
+                            Text('Time to Pack:'),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: CircularPercentIndicator(
+                                radius: 90.0,
+                                lineWidth: 8.0,
+                                animation: false,
+                                percent: _start[4]/3600,
+                                center: new Text(
+                                  _printDuration(Duration(seconds: _start[4])),
+                                  style:
+                                  new TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0,color: Colors.green),
+                                ),
+                                circularStrokeCap: CircularStrokeCap.round,
+                                progressColor: Colors.green,
+                                backgroundColor: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ):new Container(),
+                        SizedBox(
+                          height: 10.0,
+                        ),
                         LinearPercentIndicator(
-                          width: 100.0,
+                          width: 180.0,
                           animation: true,
                           animationDuration: 1000,
-                          lineHeight: 20.0,
+                          lineHeight: 8.0,
                           percent: x[4]==1?0.0:x[4]==2?0.35:x[4]==3?0.70:1.0,
-                          center: Text(x[4]==1?'0%':x[4]==2?'35%':x[4]==3?'70%':'100%',),
                           linearStrokeCap: LinearStrokeCap.butt,
                           progressColor: Colors.green,
                         ),
