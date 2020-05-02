@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'Tabs/ProfileTab.dart';
 import 'fonts/agri_icons.dart';
 import 'Tabs/Hometab.dart';
 import 'Tabs/OrderTab.dart';
@@ -17,10 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final _page = <Widget>[
     HomeTab(),
     OrderTab(),
-    Text(
-      'Index 3: User Profile',
-      style: optionStyle,
-    ),
+    ProfileTab()
   ];
 
   Position _currentPosition;
