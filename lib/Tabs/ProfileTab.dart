@@ -137,6 +137,7 @@ class _ProfileState extends State<ProfileTab> {
                         height: 20,
                       ),
                       TextFormField(
+                        enabled: _status,
                         keyboardType: TextInputType.multiline,
                         maxLines: null,
                         decoration: InputDecoration(
@@ -214,6 +215,13 @@ class _ProfileState extends State<ProfileTab> {
               ],
             ),
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            // Add your onPressed code here!
+          },
+          child: Icon(Icons.mode_edit, color: Color(0xFF78b122), size: 30.0),
+          backgroundColor: Color(0xFF2f2e41),
         ),
       ),
     );
