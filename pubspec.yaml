@@ -35,6 +35,12 @@ dev_dependencies:
   step_progress_indicator: ^0.2.2+5
   pin_code_text_field: ^1.5.1
   country_pickers: ^1.2.0
+  flutter_local_notifications: ^1.2.1
+  flutter_launcher_icons: ^0.7.3
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "android/app/src/main/res/drawable/dart.png"
 
 
 # For information on the generic Dart part of this file, see the
