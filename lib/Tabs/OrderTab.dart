@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'dart:async';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 class OrderTab extends StatefulWidget {
   @override
   _OrderTabState createState()=> _OrderTabState();
@@ -13,7 +14,7 @@ class _OrderTabState extends State<OrderTab> {
   var x=[1,1,1,1,1];
   var value1=[[true,true,true],[true,true,true],[true,true,true],[true,true,true],[true,true,true]];
   Timer _timer1,_timer2,_timer3,_timer4,_timer5,_timer;
-  var _start = [3600,3600,3600,3600,3600];
+  var _start = [1210,1210,1210,1210,1210];
   String _printDuration(Duration duration) {
     String twoDigits(int n) {
       if (n >= 10) return "$n";
@@ -24,6 +25,47 @@ class _OrderTabState extends State<OrderTab> {
     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
   }
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  Future _showNotificationWithDefaultSound() async {
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        importance: Importance.Max, priority: Priority.High);
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'Alert',
+      'Time to pack is about to over\nOpen app to see the details',
+      platformChannelSpecifics,
+      payload: 'Default_Sound',
+    );
+  }
+  Future selectNotification(String payload) async {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return new AlertDialog(
+          title: Text("Alert"),
+          content: Text("Open the app to confirm your status"),
+        );
+      },
+    );
+  }
+  @override
+  initState() {
+    super.initState();
+    // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
+    // If you have skipped STEP 3 then change app_icon to @mipmap/ic_launcher
+    var initializationSettingsAndroid = new AndroidInitializationSettings('dart');
+    var initializationSettingsIOS = new IOSInitializationSettings();
+    var initializationSettings = new InitializationSettings(
+        initializationSettingsAndroid, initializationSettingsIOS);
+    flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: selectNotification);
+  }
+
   Timer timeGenerator(int i){
     const oneSec = const Duration(seconds: 1);
     return Timer.periodic(
@@ -34,6 +76,9 @@ class _OrderTabState extends State<OrderTab> {
             timer.cancel();
           } else {
             _start[i] = _start[i] - 1;
+            if(_start[i]==1200){
+              _showNotificationWithDefaultSound();
+            }
           }
         },
       ),
@@ -1349,4 +1394,5 @@ class _OrderTabState extends State<OrderTab> {
         )
     );
   }
+
 }
