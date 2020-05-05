@@ -34,7 +34,7 @@ dev_dependencies:
   url_launcher: ^5.4.2
   percent_indicator: ^2.1.1
   step_progress_indicator: ^0.2.2+5
-  pin_code_text_field: ^1.5.1q
+  pin_code_text_field: ^1.5.1
   country_pickers: ^1.2.0
   flutter_local_notifications: ^1.2.1
 flutter_icons:
