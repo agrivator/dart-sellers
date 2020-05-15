@@ -1,3 +1,4 @@
+import 'package:dartsellers/Tabs/ProfileTab/Settings.dart';
 import 'package:flutter/material.dart';
 import 'Tabs/ProfileTab.dart';
 import 'fonts/agri_icons.dart';
@@ -53,6 +54,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontWeight: FontWeight.normal,
                         ),
                       ),
+                    Spacer(),
+                    ClipOval(
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => Settings())),
+                        child: Image.asset(
+                          'images/logo.jpg',
+                          width: 40,height: 40,
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -64,9 +77,12 @@ class _HomeScreenState extends State<HomeScreen> {
         body: Center(
           child: _page[_selectedIndex],
         ),
-        bottomNavigationBar: BottomNavigationBar(
+        bottomNavigationBar: Theme(
+    data: Theme.of(context).copyWith(
+    canvasColor: Theme.of(context).accentColor,
+    ),
+    child:BottomNavigationBar(
           currentIndex: _selectedIndex,
-          backgroundColor: Theme.of(context).accentColor,
           selectedItemColor: Colors.white,
           onTap: (int index) {
             setState(() {
@@ -90,12 +106,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             BottomNavigationBarItem(
               icon: Icon(
-                Icons.person,
+                Agri.user,
                 color: Colors.white,
               ),
               title: Text('PROFILE'),
             ),
           ],
+        )
         )
 //      Container(
 //        decoration: BoxDecoration(color: Theme.of(context).accentColor, boxShadow: [
